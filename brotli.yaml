@@ -1,7 +1,7 @@
 package:
   name: brotli
   version: "1.2.0"
-  epoch: 0
+  epoch: 1
   description: "a generic lossless compression algorithm"
   copyright:
     - license: MIT
@@ -32,6 +32,28 @@ pipeline:
   - uses: strip
 
 subpackages:
+  - name: "brotli-static"
+    description: "brotli static libraries"
+    pipeline:
+      - runs: |
+          # Build static libraries explicitly
+          # CMake by default builds shared libraries, so we need to rebuild with static
+          mkdir -p build-static
+          cd build-static
+          cmake .. \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+
+          make -j$(nproc)
+
+          # Install static libraries to subpackage
+          mkdir -p "${{targets.subpkgdir}}"/usr/lib
+          install -Dm644 libbrotlicommon.a "${{targets.subpkgdir}}"/usr/lib/libbrotlicommon.a
+          install -Dm644 libbrotlidec.a "${{targets.subpkgdir}}"/usr/lib/libbrotlidec.a
+          install -Dm644 libbrotlienc.a "${{targets.subpkgdir}}"/usr/lib/libbrotlienc.a
+
   - name: "brotli-dev"
     description: "headers for brotli"
     pipeline:
