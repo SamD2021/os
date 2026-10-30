@@ -22,12 +22,10 @@ RUN set -euxo pipefail; \
     dnf remove kernel-core --assumeyes; \
     if [ "$arch" = 'aarch64' ]; then \
         kernel_name="kernel-64k-core${KERNEL_VERSION:+-}${KERNEL_VERSION} kernel-64k-modules-extra${KERNEL_VERSION:+-}${KERNEL_VERSION}"; \
-        mlnx_name="mlnx-ofa_kernel-64k-26.07-OFED.26.07.0.7.7.0.kver.6.12.0_259.26.el10nv.2.aarch64 mlnx-ofa_kernel-modules-64k"; \
-        disable='doca-x86_64'; \
+        mlnx_name="mlnx-ofa_kernel-64k-26.07-OFED.26.07.0.7.7.0.kver.6.12.0_259.26.el10nv.2.aarch64 mlnx-ofa_kernel-modules-64k-26.07-OFED.26.07.0.7.7.0.kver.6.12.0_259.26.el10nv.2.aarch64"; \
     else \
         kernel_name="kernel-core${KERNEL_VERSION:+-}${KERNEL_VERSION} kernel-modules-extra${KERNEL_VERSION:+-}${KERNEL_VERSION}"; \
-        mlnx_name="mlnx-ofa_kernel-26.07-OFED.26.07.0.7.7.0.kver.6.12.0_259.26.el10nv.2.x86_64 mlnx-ofa_kernel-modules"; \
-        disable='doca-aarch64'; \
+        mlnx_name="mlnx-ofa_kernel-26.07-OFED.26.07.0.7.7.0.kver.6.12.0_259.26.el10nv.2.x86_64 mlnx-ofa_kernel-modules-26.07-OFED.26.07.0.7.7.0.kver.6.12.0_259.26.el10nv.2.x86_64"; \
     fi; \
     dnf install --assumeyes --disablerepo='*' --enablerepo=nvidia $kernel_name; \
     dnf remove --assumeyes openvswitch3.5; \
@@ -35,7 +33,9 @@ RUN set -euxo pipefail; \
     test "$(readlink /opt)" = 'var/opt'; \
     ln -sfn ../../usr/lib/opt/mellanox /var/opt/mellanox; \
     dnf install --assumeyes \
-        --disablerepo="$disable" \
+        --allowerasing \
+        --setopt=rhel-10.2-baseos.excludepkgs='libibverbs libibverbs-utils librdmacm librdmacm-utils libibumad ibacm srp_daemon rdma-core rdma-core-devel infiniband-diags' \
+        --setopt=rhel-10.2-appstream.excludepkgs='libibverbs libibverbs-utils librdmacm librdmacm-utils libibumad ibacm srp_daemon rdma-core rdma-core-devel infiniband-diags' \
         doca-networking-runtime \
         openvswitch-selinux-extra-policy \
         mft \
