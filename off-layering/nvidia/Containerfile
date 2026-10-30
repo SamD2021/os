@@ -41,6 +41,11 @@ RUN set -euxo pipefail; \
         libunwind \
         $mlnx_name; \
     printf '%s\n' 'L /opt/mellanox - - - - ../../usr/lib/opt/mellanox' > /usr/lib/tmpfiles.d/nvidia-doca.conf; \
+    printf '%s\n' \
+        'd /var/lib/openvswitch 0750 openvswitch hugetlbfs - -' \
+        'd /var/lib/openvswitch/pki 0750 openvswitch hugetlbfs - -' \
+        'd /run/openvswitch 0755 root root - -' \
+        > /usr/lib/tmpfiles.d/00-nvidia-ovs.conf; \
     dnf clean all; \
     kver=$(ls /usr/lib/modules); \
     DRACUT_NO_XATTR=1 dracut -vf /usr/lib/modules/$kver/initramfs.img "$kver"
