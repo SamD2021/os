@@ -1,12 +1,14 @@
+# NVIDIA partner repository, currently the internal staging copy. Both names are
+# kept because the extensions build selects them per architecture.
 [doca-x86_64]
-name=DOCA Online Repo x86_64
-baseurl=https://linux.mellanox.com/public/repo/doca/3.3.0/rhel10/x86_64/
+name=DOCA partner repository
+baseurl=https://coprbe.devel.redhat.com/results/@partner-repos-ovs-doca/ovs-doca-3.5/custom-1-$basearch/
 enabled=1
 gpgcheck=0
 
 [doca-aarch64]
-name=DOCA Online Repo 64k
-baseurl=https://linux.mellanox.com/public/repo/doca/3.3.0/rhel10/sbsa-arm64/
+name=DOCA partner repository
+baseurl=https://coprbe.devel.redhat.com/results/@partner-repos-ovs-doca/ovs-doca-3.5/custom-1-$basearch/
 enabled=1
 gpgcheck=0
 
