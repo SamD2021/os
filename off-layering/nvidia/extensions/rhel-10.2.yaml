@@ -7,11 +7,13 @@
 # consistency issues across arches. See e.g. https://issues.redhat.com/browse/OCPBUGS-52293.
 extensions:
   # Uncomment when the server-ose-4.22 repo exists for RHEL 10
-  ipsec:
-    packages:
-      - libreswan
-      - NetworkManager-libreswan
-      - doca-openvswitch-ipsec
+  # The DOCA variant needs doca-openvswitch-ipsec and python3-doca-openvswitch,
+  # which the partner repository does not carry yet.
+  #ipsec:
+  #  packages:
+  #    - libreswan
+  #    - NetworkManager-libreswan
+  #    - doca-openvswitch-ipsec
   # https://github.com/coreos/fedora-coreos-tracker/issues/326
   usbguard:
     packages:
