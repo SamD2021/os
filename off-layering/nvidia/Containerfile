@@ -9,6 +9,10 @@ COPY off-layering/nvidia/nvidia.repo  /etc/yum.repos.d/
 COPY off-layering/nvidia/doca.repo    /etc/yum.repos.d/
 
 # Do not use heredoc it breaks Konflux
+#
+# DOCA installs its libraries under /opt/mellanox. /opt is a symlink to /var/opt and
+# /var is not deployed with the image, so that subpath is pointed at /usr and the
+# tmpfiles rule below re-creates the link at boot.
 
 RUN set -euxo pipefail; \
     OLD_VERSION=$(grep "^OSTREE_VERSION=" /usr/lib/os-release | cut -d"'" -f2); \
@@ -26,7 +30,9 @@ RUN set -euxo pipefail; \
     fi; \
     dnf install --assumeyes --disablerepo='*' --enablerepo=nvidia $kernel_name; \
     dnf remove --assumeyes openvswitch3.5; \
-    mkdir -p /var/opt /var/usrlocal; \
+    mkdir -p /usr/lib/opt/mellanox /var/opt /var/usrlocal; \
+    test "$(readlink /opt)" = 'var/opt'; \
+    ln -sfn ../../usr/lib/opt/mellanox /var/opt/mellanox; \
     dnf install --assumeyes \
         --disablerepo="$disable" \
         doca-networking-runtime \
@@ -34,6 +40,7 @@ RUN set -euxo pipefail; \
         mft \
         libunwind \
         $mlnx_name; \
+    printf '%s\n' 'L /opt/mellanox - - - - ../../usr/lib/opt/mellanox' > /usr/lib/tmpfiles.d/nvidia-doca.conf; \
     dnf clean all; \
     kver=$(ls /usr/lib/modules); \
     DRACUT_NO_XATTR=1 dracut -vf /usr/lib/modules/$kver/initramfs.img "$kver"
