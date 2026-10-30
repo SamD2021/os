@@ -17,6 +17,7 @@ COPY off-layering/nvidia/doca.repo    /etc/yum.repos.d/
 RUN set -euxo pipefail; \
     OLD_VERSION=$(grep "^OSTREE_VERSION=" /usr/lib/os-release | cut -d"'" -f2); \
     [ -n "$OLD_VERSION" ] || { echo "Error: Could not extract version from os-release"; exit 1; }; \
+    if [ -n "${VERSION:-}" ]; then sed -i "s|${OLD_VERSION}|${VERSION}|g" /usr/lib/os-release; fi; \
     arch="$(uname -m)"; \
     dnf remove kernel-core --assumeyes; \
     if [ "$arch" = 'aarch64' ]; then \
